@@ -7,6 +7,7 @@ import {
   scoreWhenDeuce,
   scoreWhenAdvantage,
   scoreWhenForty,
+  scoreWhenPoint,
 } from '..';
 
 describe('Tests for tooling functions', () => {
@@ -136,15 +137,63 @@ describe('Tests for transition functions', () => {
     });
   });
   // -------------------------TESTS POINTS-------------------------- //
-  // test('Given players at 0 or 15 points score kind is still POINTS', () => {
-  //   throw new Error(
-  //     'Your turn to code the preconditions, expected result and test.'
-  //   );
-  // });
+  test('Given players at 0 or 15 points score kind is still POINTS', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((winner) => {
+      const player = winner as 'PLAYER_ONE' | 'PLAYER_TWO';
+      const other = otherPlayer(player);
 
-  // test('Given one player at 30 and win, score kind is forty', () => {
-  //   throw new Error(
-  //     'Your turn to code the preconditions, expected result and test.'
-  //   );
-  // });
+      // Case 1: Love -> Fifteen
+      const currentPoints1 = {
+        PLAYER_ONE: { kind: 'LOVE' },
+        PLAYER_TWO: { kind: 'LOVE' },
+      } as any;
+      const score1 = scoreWhenPoint(currentPoints1, player);
+      const expectedScore1 = {
+        kind: 'POINTS',
+        pointsData: {
+          ...currentPoints1,
+          [player]: { kind: 'FIFTEEN' },
+        },
+      };
+      expect(score1).toStrictEqual(expectedScore1);
+
+      // Case 2: Fifteen -> Thirty
+      const currentPoints2 = {
+        ...currentPoints1,
+        [player]: { kind: 'FIFTEEN' },
+      } as any;
+      const score2 = scoreWhenPoint(currentPoints2, player);
+      const expectedScore2 = {
+        kind: 'POINTS',
+        pointsData: {
+          ...currentPoints2,
+          [player]: { kind: 'THIRTY' },
+        },
+      };
+      expect(score2).toStrictEqual(expectedScore2);
+    });
+  });
+
+  test('Given one player at 30 and win, score kind is forty', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((winner) => {
+      const player = winner as 'PLAYER_ONE' | 'PLAYER_TWO';
+      const other = otherPlayer(player);
+
+      const currentPoints = {
+        PLAYER_ONE: { kind: 'LOVE' },
+        PLAYER_TWO: { kind: 'LOVE' },
+        [player]: { kind: 'THIRTY' },
+      } as any;
+
+      const score = scoreWhenPoint(currentPoints, player);
+      const expectedScore = {
+        kind: 'FORTY',
+        fortyData: {
+          player: player,
+          otherPoint: currentPoints[other],
+        },
+      };
+      expect(score).toStrictEqual(expectedScore);
+    });
+  });
 });

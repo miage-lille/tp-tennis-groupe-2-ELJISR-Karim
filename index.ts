@@ -57,6 +57,7 @@ import {
   forty,
   fifteen,
   thirty,
+  points,
   FortyData,
 } from './types/score';
 import { isSamePlayer } from './types/player';
@@ -103,7 +104,21 @@ export const scoreWhenForty = (
 // Tip: You can use pipe function from Effect to improve readability.
 // See scoreWhenForty function above.
 export const scoreWhenPoint = (current: PointsData, winner: Player): Score => {
-  throw new Error('not implemented');
+  return pipe(
+    incrementPoint(current[winner]),
+    Option.match({
+      onSome: (newPoint) =>
+        points(
+          winner === 'PLAYER_ONE' ? newPoint : current.PLAYER_ONE,
+          winner === 'PLAYER_TWO' ? newPoint : current.PLAYER_TWO
+        ),
+      onNone: () =>
+        forty(
+          winner,
+          winner === 'PLAYER_ONE' ? current.PLAYER_TWO : current.PLAYER_ONE
+        ) as any,
+    })
+  );
 };
 
 // Exercice 3
