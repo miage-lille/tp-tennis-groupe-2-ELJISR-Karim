@@ -1,5 +1,10 @@
 import { describe, expect, test } from '@jest/globals';
-import { otherPlayer, playerToString } from '..';
+import {
+  otherPlayer,
+  playerToString,
+  pointToString,
+  scoreToString,
+} from '..';
 
 describe('Tests for tooling functions', () => {
   test('Given playerOne when playerToString', () => {
@@ -8,6 +13,47 @@ describe('Tests for tooling functions', () => {
 
   test('Given playerOne when otherPlayer', () => {
     expect(otherPlayer('PLAYER_ONE')).toStrictEqual('PLAYER_TWO');
+  });
+});
+
+describe('Tests for string conversion', () => {
+  test('Given Love, Fifteen, Thirty points, they are correctly converted to string', () => {
+    expect(
+      pointToString({
+        kind: 'LOVE',
+      })
+    ).toStrictEqual('Love');
+    expect(
+      pointToString({
+        kind: 'FIFTEEN',
+      })
+    ).toStrictEqual('Fifteen');
+    expect(
+      pointToString({
+        kind: 'THIRTY',
+      })
+    ).toStrictEqual('Thirty');
+  });
+
+  test('Given Score, it is correctly converted to string', () => {
+    expect(
+      scoreToString({
+        kind: 'POINTS',
+        pointsData: {
+          PLAYER_ONE: {
+            kind: 'LOVE',
+          },
+          PLAYER_TWO: {
+            kind: 'FIFTEEN',
+          },
+        },
+      })
+    ).toStrictEqual('Love - Fifteen');
+    expect(
+      scoreToString({
+        kind: 'DEUCE',
+      })
+    ).toStrictEqual('Deuce');
   });
 });
 
