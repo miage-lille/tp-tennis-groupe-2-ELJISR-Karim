@@ -6,6 +6,7 @@ import {
   scoreToString,
   scoreWhenDeuce,
   scoreWhenAdvantage,
+  scoreWhenForty,
 } from '..';
 
 describe('Tests for tooling functions', () => {
@@ -88,15 +89,52 @@ describe('Tests for transition functions', () => {
       expect(score).toStrictEqual(scoreExpected);
     });
   });
-  // test('Given a player at 40 when the same player wins, score is Game for this player', () => {
-  //   console.log('To fill when we will know how represent Forty');
-  // });
-  // test('Given player at 40 and other at 30 when other wins, score is Deuce', () => {
-  //   console.log('To fill when we will know how represent Forty');
-  // });
-  // test('Given player at 40 and other at 15 when other wins, score is 40 - 15', () => {
-  //   console.log('To fill when we will know how represent Forty');
-  // });
+  test('Given a player at 40 when the same player wins, score is Game for this player', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((winner) => {
+      const player = winner as 'PLAYER_ONE' | 'PLAYER_TWO';
+      const fortyData = {
+        player,
+        otherPoint: { kind: 'THIRTY' } as any, // Using strict structure for now or constructors
+      };
+      const score = scoreWhenForty(fortyData, player);
+      const scoreExpected = { kind: 'GAME', player };
+      expect(score).toStrictEqual(scoreExpected);
+    });
+  });
+
+  test('Given player at 40 and other at 30 when other wins, score is Deuce', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((winner) => {
+      const player = winner as 'PLAYER_ONE' | 'PLAYER_TWO';
+      const other = otherPlayer(player);
+      const fortyData = {
+        player: other,
+        otherPoint: { kind: 'THIRTY' } as any,
+      };
+      const score = scoreWhenForty(fortyData, player);
+      const scoreExpected = { kind: 'DEUCE' };
+      expect(score).toStrictEqual(scoreExpected);
+    });
+  });
+
+  test('Given player at 40 and other at 15 when other wins, score is 40 - 30', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((winner) => {
+      const player = winner as 'PLAYER_ONE' | 'PLAYER_TWO';
+      const other = otherPlayer(player);
+      const fortyData = {
+        player: other,
+        otherPoint: { kind: 'FIFTEEN' } as any,
+      };
+      const score = scoreWhenForty(fortyData, player);
+      const scoreExpected = {
+        kind: 'FORTY',
+        fortyData: {
+          player: other,
+          otherPoint: { kind: 'THIRTY' },
+        },
+      };
+      expect(score).toStrictEqual(scoreExpected);
+    });
+  });
   // -------------------------TESTS POINTS-------------------------- //
   // test('Given players at 0 or 15 points score kind is still POINTS', () => {
   //   throw new Error(

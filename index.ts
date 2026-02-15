@@ -54,6 +54,10 @@ import {
   advantage,
   deuce,
   game,
+  forty,
+  fifteen,
+  thirty,
+  FortyData,
 } from './types/score';
 import { isSamePlayer } from './types/player';
 
@@ -67,11 +71,30 @@ export const scoreWhenAdvantage = (
   return deuce();
 };
 
+export const incrementPoint = (point: Point): Option.Option<Point> => {
+  switch (point.kind) {
+    case 'LOVE':
+      return Option.some(fifteen());
+    case 'FIFTEEN':
+      return Option.some(thirty());
+    case 'THIRTY':
+      return Option.none();
+  }
+};
+
 export const scoreWhenForty = (
-  currentForty: unknown, // TO UPDATE WHEN WE KNOW HOW TO REPRESENT FORTY
+  currentForty: FortyData,
   winner: Player
 ): Score => {
-  throw new Error('not implemented');
+  if (isSamePlayer(currentForty.player, winner)) return game(winner);
+  return pipe(
+    incrementPoint(currentForty.otherPoint),
+    Option.match({
+      onNone: () => deuce(),
+      onSome: (p) => forty(currentForty.player, p) as any, // Cast to any or Score to avoid type issues with union if needed, but structurally it should match Score. 
+      // Actually strictly it returns Forty which is part of Score.
+    })
+  );
 };
 
 
