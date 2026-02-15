@@ -4,6 +4,8 @@ import {
   playerToString,
   pointToString,
   scoreToString,
+  scoreWhenDeuce,
+  scoreWhenAdvantage,
 } from '..';
 
 describe('Tests for tooling functions', () => {
@@ -58,15 +60,34 @@ describe('Tests for string conversion', () => {
 });
 
 describe('Tests for transition functions', () => {
-  // test('Given deuce, score is advantage to winner', () => {
-  //   console.log('To fill when we will know how represent Deuce');
-  // });
-  // test('Given advantage when advantagedPlayer wins, score is Game avantagedPlayer', () => {
-  //   console.log('To fill when we will know how represent Advantage');
-  // });
-  // test('Given advantage when otherPlayer wins, score is Deuce', () => {
-  //   console.log('To fill when we will know how represent Advantage');
-  // });
+  test('Given deuce, score is advantage to winner', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((w) => {
+      const winner = w as 'PLAYER_ONE' | 'PLAYER_TWO';
+      const score = scoreWhenDeuce(winner);
+      const scoreExpected = { kind: 'ADVANTAGE', player: winner };
+      expect(score).toStrictEqual(scoreExpected);
+    });
+  });
+
+  test('Given advantage when advantagedPlayer wins, score is Game advantagedPlayer', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((p) => {
+      const advantagedPlayer = p as 'PLAYER_ONE' | 'PLAYER_TWO';
+      const winner = advantagedPlayer;
+      const score = scoreWhenAdvantage(advantagedPlayer, winner);
+      const scoreExpected = { kind: 'GAME', player: winner };
+      expect(score).toStrictEqual(scoreExpected);
+    });
+  });
+
+  test('Given advantage when otherPlayer wins, score is Deuce', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((p) => {
+      const advantagedPlayer = p as 'PLAYER_ONE' | 'PLAYER_TWO';
+      const winner = otherPlayer(advantagedPlayer);
+      const score = scoreWhenAdvantage(advantagedPlayer, winner);
+      const scoreExpected = { kind: 'DEUCE' };
+      expect(score).toStrictEqual(scoreExpected);
+    });
+  });
   // test('Given a player at 40 when the same player wins, score is Game for this player', () => {
   //   console.log('To fill when we will know how represent Forty');
   // });

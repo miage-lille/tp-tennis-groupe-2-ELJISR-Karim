@@ -49,15 +49,22 @@ export const scoreToString = (score: Score): string => {
   }
 };
 
-export const scoreWhenDeuce = (winner: Player): Score => {
-  throw new Error('not implemented');
-};
+// Implemented in types/score.ts
+import {
+  advantage,
+  deuce,
+  game,
+} from './types/score';
+import { isSamePlayer } from './types/player';
+
+export const scoreWhenDeuce = (winner: Player): Score => advantage(winner);
 
 export const scoreWhenAdvantage = (
   advantagedPlayed: Player,
   winner: Player
 ): Score => {
-  throw new Error('not implemented');
+  if (isSamePlayer(advantagedPlayed, winner)) return game(winner);
+  return deuce();
 };
 
 export const scoreWhenForty = (
