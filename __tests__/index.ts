@@ -8,6 +8,8 @@ import {
   scoreWhenAdvantage,
   scoreWhenForty,
   scoreWhenPoint,
+  scoreWhenGame,
+  score,
 } from '..';
 
 describe('Tests for tooling functions', () => {
@@ -195,5 +197,58 @@ describe('Tests for transition functions', () => {
       };
       expect(score).toStrictEqual(expectedScore);
     });
+  });
+
+  test('Given game, score is still game', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((winner) => {
+      const player = winner as 'PLAYER_ONE' | 'PLAYER_TWO';
+      const score = scoreWhenGame(player);
+      const expectedScore = { kind: 'GAME', player };
+      expect(score).toStrictEqual(expectedScore);
+    });
+  });
+});
+
+describe('Tests for score function (Integration)', () => {
+  test('Given a full game flow', () => {
+    let currentScore: any = {
+      kind: 'POINTS',
+      pointsData: {
+        PLAYER_ONE: { kind: 'LOVE' },
+        PLAYER_TWO: { kind: 'LOVE' },
+      },
+    };
+
+    // 15 - Love
+    currentScore = score(currentScore, 'PLAYER_ONE');
+    expect(scoreToString(currentScore)).toBe('Fifteen - Love');
+
+    // 15 - 15
+    currentScore = score(currentScore, 'PLAYER_TWO');
+    expect(scoreToString(currentScore)).toBe('Fifteen - Fifteen');
+
+    // 30 - 15
+    currentScore = score(currentScore, 'PLAYER_ONE');
+    expect(scoreToString(currentScore)).toBe('Thirty - Fifteen');
+
+    // 40 - 15
+    currentScore = score(currentScore, 'PLAYER_ONE');
+    expect(scoreToString(currentScore)).toBe('Forty - Fifteen');
+
+    // 40 - 30
+    currentScore = score(currentScore, 'PLAYER_TWO');
+    expect(scoreToString(currentScore)).toBe('Forty - Thirty');
+
+    // Deuce
+    currentScore = score(currentScore, 'PLAYER_TWO');
+    expect(scoreToString(currentScore)).toBe('Deuce');
+
+    // Advantage Player 1
+    currentScore = score(currentScore, 'PLAYER_ONE');
+    expect(scoreToString(currentScore)).toBe('Advantage Player 1');
+
+    // Game Player 1
+    currentScore = score(currentScore, 'PLAYER_ONE');
+    expect(scoreToString(currentScore)).toBe('Game Player 1');
   });
 });
