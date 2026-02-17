@@ -11,14 +11,23 @@ import {
   scoreWhenGame,
   score,
 } from '..';
+import { stringToPlayer } from '../types/player';
 
 describe('Tests for tooling functions', () => {
   test('Given playerOne when playerToString', () => {
     expect(playerToString('PLAYER_ONE')).toStrictEqual('Player 1');
   });
 
+  test('Given playerTwo when playerToString', () => {
+    expect(playerToString('PLAYER_TWO')).toStrictEqual('Player 2');
+  });
+
   test('Given playerOne when otherPlayer', () => {
     expect(otherPlayer('PLAYER_ONE')).toStrictEqual('PLAYER_TWO');
+  });
+
+  test('Given playerTwo when otherPlayer', () => {
+    expect(otherPlayer('PLAYER_TWO')).toStrictEqual('PLAYER_ONE');
   });
 });
 
@@ -250,5 +259,11 @@ describe('Tests for score function (Integration)', () => {
     // Game Player 1
     currentScore = score(currentScore, 'PLAYER_ONE');
     expect(scoreToString(currentScore)).toBe('Game Player 1');
+  });
+});
+
+describe('Tests for player type', () => {
+  test('Given invalid string, stringToPlayer throws', () => {
+    expect(() => stringToPlayer('INVALID')).toThrow();
   });
 });
